@@ -29,10 +29,50 @@ public class FrameEventDrawer : PropertyDrawer
             EditorGUI.PropertyField(r, timeProp);
 
         r.y += lineH + spacing;
+
+        DrawClipboardButtons(new Rect(r.x, r.y, r.width, lineH), triggerProp);
+        r.y += lineH + spacing;
+
         r.height = EditorGUI.GetPropertyHeight(triggerProp);
         EditorGUI.PropertyField(r, triggerProp);
 
         EditorGUI.EndProperty();
+    }
+
+    private static void DrawClipboardButtons(Rect row, SerializedProperty triggerProp)
+    {
+        const float gap = 4f;
+        float w = (row.width - gap * 2f) / 3f;
+
+        var copyRect = new Rect(row.x, row.y, w, row.height);
+        var replaceRect = new Rect(row.x + w + gap, row.y, w, row.height);
+        var appendRect = new Rect(row.x + (w + gap) * 2f, row.y, w, row.height);
+
+        if (GUI.Button(copyRect, "Copy Listeners"))
+        {
+            UnityEventClipboard.Copy(triggerProp);
+        }
+
+        bool prev = GUI.enabled;
+        GUI.enabled = prev && UnityEventClipboard.HasClipboard;
+
+        string pasteLabel = UnityEventClipboard.HasClipboard
+            ? $"Paste Replace ({UnityEventClipboard.ClipboardCount})"
+            : "Paste Replace";
+        string appendLabel = UnityEventClipboard.HasClipboard
+            ? $"Paste Append ({UnityEventClipboard.ClipboardCount})"
+            : "Paste Append";
+
+        if (GUI.Button(replaceRect, pasteLabel))
+        {
+            UnityEventClipboard.Paste(triggerProp, replace: true);
+        }
+        if (GUI.Button(appendRect, appendLabel))
+        {
+            UnityEventClipboard.Paste(triggerProp, replace: false);
+        }
+
+        GUI.enabled = prev;
     }
 
     public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
@@ -40,6 +80,6 @@ public class FrameEventDrawer : PropertyDrawer
         float lineH = EditorGUIUtility.singleLineHeight;
         float spacing = EditorGUIUtility.standardVerticalSpacing;
         var triggerProp = property.FindPropertyRelative("onTrigger");
-        return (lineH + spacing) * 3 + EditorGUI.GetPropertyHeight(triggerProp);
+        return (lineH + spacing) * 4 + EditorGUI.GetPropertyHeight(triggerProp);
     }
 }

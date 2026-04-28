@@ -22,6 +22,9 @@ public static class UnityEventClipboard
 
     private static List<CallEntry> _clipboard;
 
+    public static bool HasClipboard => _clipboard != null && _clipboard.Count > 0;
+    public static int ClipboardCount => _clipboard?.Count ?? 0;
+
     static UnityEventClipboard()
     {
         EditorApplication.contextualPropertyMenu += OnContextual;
@@ -55,7 +58,7 @@ public static class UnityEventClipboard
         return calls != null && calls.isArray;
     }
 
-    private static void Copy(SerializedProperty eventProp)
+    public static void Copy(SerializedProperty eventProp)
     {
         var calls = eventProp.FindPropertyRelative("m_PersistentCalls.m_Calls");
         if (calls == null) return;
@@ -82,7 +85,7 @@ public static class UnityEventClipboard
         _clipboard = list;
     }
 
-    private static void Paste(SerializedProperty eventProp, bool replace)
+    public static void Paste(SerializedProperty eventProp, bool replace)
     {
         if (_clipboard == null) return;
         var calls = eventProp.FindPropertyRelative("m_PersistentCalls.m_Calls");
