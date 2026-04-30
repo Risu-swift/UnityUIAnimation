@@ -75,6 +75,8 @@ public class ImageAnimation : MonoBehaviour
         ResetAnimation();
     }
 
+    public void Play() => Play(1f);
+
     public void PlayPercent(int percentage) => Play((float)percentage / 100f);
 
     // Update is called once per frame
@@ -168,14 +170,13 @@ public class ImageAnimation : MonoBehaviour
     {
         if (animationSequence == null || animationSequence.Count == 0 || percentage <= 0f) return;
 
-        if (!isPlaying)
-        {
-            elapsedTime = 0f;
-            sequenceElapsedTime = 0f;
-            hasStarted = false;
-            isPlaying = true;
-            ResetFrameEvents();
-        }
+        elapsedTime = 0f;
+        sequenceElapsedTime = 0f;
+        hasStarted = false;
+        currentFrameIndex = 0;
+        sequenceIndex = 0;
+        isPlaying = true;
+        ResetFrameEvents();
 
         playbackPercentage = Mathf.Clamp01(percentage);
 
@@ -186,18 +187,7 @@ public class ImageAnimation : MonoBehaviour
 
         if (targetFrameIndex >= totalFrames) targetFrameIndex = totalFrames - 1;
 
-        if (!hasStarted)
-        {
-            currentFrameIndex = Mathf.Clamp(currentFrameIndex, 0, targetFrameIndex);
-            image.sprite = currentSequence.AnimationSequence[currentFrameIndex];
-        }
-        else
-        {
-            if (currentFrameIndex <= targetFrameIndex)
-            {
-                StartPlaybackFromCurrentFrame(targetFrameIndex);
-            }
-        }
+        image.sprite = currentSequence.AnimationSequence[currentFrameIndex];
     }
 
     private void StartNewSequence()
@@ -208,13 +198,6 @@ public class ImageAnimation : MonoBehaviour
         currentFrameIndex = 0;
         sequenceElapsedTime = 0f;
         image.sprite = currentSequence.AnimationSequence[currentFrameIndex];
-    }
-
-    private void StartPlaybackFromCurrentFrame(int targetFrameIndex)
-    {
-        currentFrameIndex = Mathf.Clamp(currentFrameIndex, 0, targetFrameIndex);
-        image.sprite = animationSequence[sequenceIndex].AnimationSequence[currentFrameIndex];
-        hasStarted = true;
     }
 
     private void ResetAnimation()
