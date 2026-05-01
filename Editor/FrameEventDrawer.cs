@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 
@@ -83,3 +84,4 @@ public class FrameEventDrawer : PropertyDrawer
         return (lineH + spacing) * 4 + EditorGUI.GetPropertyHeight(triggerProp);
     }
 }
+#endif
